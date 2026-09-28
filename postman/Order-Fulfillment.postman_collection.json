@@ -1,0 +1,176 @@
+{
+	"info": {
+		"_postman_id": "c1f7a012-3456-7890-abcd-ef1234567890",
+		"name": "Order Fulfillment & Inventory Management API",
+		"description": "Postman Collection for Order Fulfillment Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@platform.com\",\n  \"full_name\": \"System Admin\",\n  \"password\": \"Admin@123\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"]}
+					}
+				},
+				{
+					"name": "Login Admin",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@platform.com\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"]}
+					}
+				},
+				{
+					"name": "Get Current User (/me)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sku\": \"PROD-101\",\n  \"name\": \"Developer Laptop Pro\",\n  \"price\": 1499.99,\n  \"cost_price\": 1000.00\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+					}
+				},
+				{
+					"name": "List Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/products?page=1&page_size=20", "host": ["{{baseUrl}}"], "path": ["api", "products"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Inventory",
+			"item": [
+				{
+					"name": "Adjust Stock",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"},
+							{"key": "Idempotency-Key", "value": "ADJ-KEY-001"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": 1,\n  \"warehouse_id\": 1,\n  \"quantity\": 100,\n  \"reason\": \"Initial Stocking\"\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/inventory/adjust", "host": ["{{baseUrl}}"], "path": ["api", "inventory", "adjust"]}
+					}
+				},
+				{
+					"name": "Low Stock Detection",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/inventory/low-stock", "host": ["{{baseUrl}}"], "path": ["api", "inventory", "low-stock"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "Create Order (Idempotent)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"},
+							{"key": "Authorization", "value": "Bearer {{customerToken}}"},
+							{"key": "Idempotency-Key", "value": "ORD-KEY-777"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"warehouse_id\": 1,\n  \"items\": [\n    {\"product_id\": 1, \"quantity\": 2}\n  ]\n}"
+						},
+						"url": {"raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+					}
+				},
+				{
+					"name": "List Orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/orders?page=1&page_size=20", "host": ["{{baseUrl}}"], "path": ["api", "orders"]}
+					}
+				}
+			]
+		},
+		{
+			"name": "Dashboard & Audit",
+			"item": [
+				{
+					"name": "Admin Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/dashboard/admin", "host": ["{{baseUrl}}"], "path": ["api", "dashboard", "admin"]}
+					}
+				},
+				{
+					"name": "Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{adminToken}}"}
+						],
+						"url": {"raw": "{{baseUrl}}/api/audit-logs?page=1&page_size=50", "host": ["{{baseUrl}}"], "path": ["api", "audit-logs"]}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:8000"
+		}
+	]
+}

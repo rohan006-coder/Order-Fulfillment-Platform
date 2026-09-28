@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Fulfillment & Inventory Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --card-bg: rgba(18, 26, 43, 0.75);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --glass-blur: blur(16px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--card-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-badge {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.85rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            font-size: 0.825rem;
+            color: var(--accent-green);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Container Layout */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+            gap: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Sidebar Nav */
+        .sidebar {
+            width: 260px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            backdrop-filter: var(--glass-blur);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            height: fit-content;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.25), transparent);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            backdrop-filter: var(--glass-blur);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .metric-sub {
+            font-size: 0.8rem;
+            color: var(--accent-green);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            backdrop-filter: var(--glass-blur);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.85rem 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--card-border);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            display: inline-block;
+        }
+
+        .badge-active, .badge-delivered, .badge-confirmed {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-pending, .badge-processing {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-cancelled, .badge-inactive, .badge-failed {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-rose);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .code-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Logs timeline */
+        .log-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .log-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            width: 160px;
+        }
+
+        .log-action {
+            font-weight: 600;
+            color: var(--accent-cyan);
+            width: 180px;
+        }
+
+        .log-details {
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <div class="logo-badge">⚡</div>
+            <div>
+                <div class="logo-title">Order Fulfillment Platform</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Real-Time API & Inventory Control System</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="status-pill">
+                <div class="status-dot"></div>
+                API Live : Port 9876
+            </div>
+            <a href="/docs" target="_blank" class="btn btn-outline">
+                Swagger OpenAPI Docs ↗
+            </a>
+            <a href="/redoc" target="_blank" class="btn btn-primary">
+                ReDoc Docs ↗
+            </a>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <div class="sidebar">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                📊 Dashboard
+            </div>
+            <div class="nav-item" onclick="switchTab('inventory')">
+                📦 Inventory Stock
+            </div>
+            <div class="nav-item" onclick="switchTab('orders')">
+                🛒 Orders & Fulfillment
+            </div>
+            <div class="nav-item" onclick="switchTab('products')">
+                🏷️ Products Catalog
+            </div>
+            <div class="nav-item" onclick="switchTab('returns')">
+                🔄 Returns & Refunds
+            </div>
+            <div class="nav-item" onclick="switchTab('audit')">
+                📜 Audit Logs
+            </div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- DASHBOARD TAB -->
+            <div id="tab-dashboard" class="tab-panel active">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Total Orders Placed</div>
+                        <div class="metric-value" id="m-total-orders">--</div>
+                        <div class="metric-sub">▲ System total active orders</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Total Platform Revenue</div>
+                        <div class="metric-value" id="m-total-revenue">$0.00</div>
+                        <div class="metric-sub">Paid & Settled Orders</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Low Stock Threshold Alerts</div>
+                        <div class="metric-value" id="m-low-stock" style="color: var(--accent-amber);">--</div>
+                        <div class="metric-sub">Available &le; Reorder Level</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Out of Stock Items</div>
+                        <div class="metric-value" id="m-out-stock" style="color: var(--accent-rose);">0</div>
+                        <div class="metric-sub">Immediate Restock Required</div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">📦 Real-Time Inventory Stock Summary</div>
+                        <button class="btn btn-outline" onclick="loadInventory()">Refresh Data</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product SKU / Name</th>
+                                <th>Warehouse</th>
+                                <th>Available Qty</th>
+                                <th>Reserved Qty</th>
+                                <th>Reorder Threshold</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body">
+                            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Loading inventory data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- INVENTORY TAB -->
+            <div id="tab-inventory" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">Warehouse Inventory Control</div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary" onclick="triggerAdjustModal()">+ Adjust Stock</button>
+                            <button class="btn btn-outline" onclick="triggerTransferModal()">⇄ Transfer Stock</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Product ID</th>
+                                <th>Warehouse ID</th>
+                                <th>Available Stock</th>
+                                <th>Reserved Stock</th>
+                                <th>Damaged Qty</th>
+                                <th>Reorder Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="full-inventory-body">
+                            <tr><td colspan="7">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ORDERS TAB -->
+            <div id="tab-orders" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">Order Lifecycle & State Machine</div>
+                        <button class="btn btn-outline" onclick="loadOrders()">Refresh Orders</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Customer ID</th>
+                                <th>Warehouse</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Assigned Agent</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <tr><td colspan="7">Loading orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PRODUCTS TAB -->
+            <div id="tab-products" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">Product Catalog</div>
+                        <button class="btn btn-primary" onclick="loadProducts()">Refresh Products</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>SKU Code</th>
+                                <th>Product Name</th>
+                                <th>Price</th>
+                                <th>Cost Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <tr><td colspan="6">Loading catalog...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- RETURNS TAB -->
+            <div id="tab-returns" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">Returns & Refunds Workflow</div>
+                        <button class="btn btn-outline" onclick="loadReturns()">Refresh Returns</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Return ID</th>
+                                <th>Order ID</th>
+                                <th>Customer ID</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="returns-table-body">
+                            <tr><td colspan="5">Loading returns...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AUDIT TAB -->
+            <div id="tab-audit" class="tab-panel">
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-title">Immutable Audit Log Activity Stream</div>
+                        <button class="btn btn-outline" onclick="loadAuditLogs()">Refresh Logs</button>
+                    </div>
+                    <div id="audit-log-container">
+                        <div style="color: var(--text-muted); padding: 1rem;">Loading audit logs...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let adminToken = "";
+        let custToken = "";
+
+        async function init() {
+            try {
+                // Login as admin for initial load
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: "admin@platform.com", password: "Admin@123" })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    adminToken = data.access_token;
+                    loadDashboard();
+                    loadInventory();
+                    loadOrders();
+                    loadProducts();
+                    loadReturns();
+                    loadAuditLogs();
+                }
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(el => el.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        async function loadDashboard() {
+            if (!adminToken) return;
+            const res = await fetch("/api/dashboard/admin", {
+                headers: { "Authorization": `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+                const d = await res.json();
+                document.getElementById("m-total-orders").innerText = d.total_orders;
+                document.getElementById("m-total-revenue").innerText = `$${d.total_revenue.toFixed(2)}`;
+                document.getElementById("m-low-stock").innerText = d.low_stock_products;
+                document.getElementById("m-out-stock").innerText = d.out_of_stock_products;
+            }
+        }
+
+        async function loadInventory() {
+            if (!adminToken) return;
+            const res = await fetch("/api/inventory", {
+                headers: { "Authorization": `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+                const items = await res.json();
+                let html = "";
+                let fullHtml = "";
+
+                items.forEach(i => {
+                    const statusBadge = i.available_quantity <= i.reorder_level 
+                        ? `<span class="badge badge-pending">Low Stock</span>`
+                        : `<span class="badge badge-active">In Stock</span>`;
+
+                    html += `
+                        <tr>
+                            <td><span class="code-text">PROD-${i.product_id}</span></td>
+                            <td>Warehouse #${i.warehouse_id}</td>
+                            <td style="font-weight:700; color:#fff;">${i.available_quantity}</td>
+                            <td style="color:var(--accent-amber);">${i.reserved_quantity}</td>
+                            <td>${i.reorder_level}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+
+                    fullHtml += `
+                        <tr>
+                            <td>${i.id}</td>
+                            <td><span class="code-text">Product #${i.product_id}</span></td>
+                            <td>Warehouse #${i.warehouse_id}</td>
+                            <td style="font-weight:700; color:#fff;">${i.available_quantity}</td>
+                            <td style="color:var(--accent-amber);">${i.reserved_quantity}</td>
+                            <td>${i.damaged_quantity}</td>
+                            <td>${i.reorder_level}</td>
+                        </tr>
+                    `;
+                });
+
+                document.getElementById("inventory-table-body").innerHTML = html || `<tr><td colspan="6">No inventory records found.</td></tr>`;
+                document.getElementById("full-inventory-body").innerHTML = fullHtml || `<tr><td colspan="7">No inventory records.</td></tr>`;
+            }
+        }
+
+        async function loadOrders() {
+            if (!adminToken) return;
+            const res = await fetch("/api/orders", {
+                headers: { "Authorization": `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+                const orders = await res.json();
+                let html = "";
+                orders.forEach(o => {
+                    const badgeClass = `badge-${o.status.toLowerCase()}`;
+                    html += `
+                        <tr>
+                            <td><span class="code-text">${o.order_number}</span></td>
+                            <td>Customer #${o.customer_id}</td>
+                            <td>Warehouse #${o.warehouse_id}</td>
+                            <td style="font-weight:700;">$${parseFloat(o.total_amount).toFixed(2)}</td>
+                            <td><span class="badge ${badgeClass}">${o.status}</span></td>
+                            <td><span class="badge badge-active">${o.payment_status}</span></td>
+                            <td>${o.assigned_agent_id ? 'Agent #' + o.assigned_agent_id : 'Unassigned'}</td>
+                        </tr>
+                    `;
+                });
+                document.getElementById("orders-table-body").innerHTML = html || `<tr><td colspan="7">No orders placed yet.</td></tr>`;
+            }
+        }
+
+        async function loadProducts() {
+            if (!adminToken) return;
+            const res = await fetch("/api/products", {
+                headers: { "Authorization": `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+                const products = await res.json();
+                let html = "";
+                products.forEach(p => {
+                    html += `
+                        <tr>
+                            <td>${p.id}</td>
+                            <td><span class="code-text">${p.sku}</span></td>
+                            <td style="font-weight:600;">${p.name}</td>
+                            <td>$${parseFloat(p.price).toFixed(2)}</td>
+                            <td>$${parseFloat(p.cost_price).toFixed(2)}</td>
+                            <td><span class="badge badge-active">${p.status}</span></td>
+                        </tr>
+                    `;
+                });
+                document.getElementById("products-table-body").innerHTML = html || `<tr><td colspan="6">No products found.</td></tr>`;
+            }
+        }
+
+        async function loadReturns() {
+            if (!adminToken) return;
+            const res = await fetch("/api/returns", {
+                headers: { "Authorization": `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+                const returns = await res.json();
+                let html = "";
+                returns.forEach(r => {
+                    html += `
+                        <tr>
+                            <td>Return #${r.id}</td>
+                            <td>Order #${r.order_id}</td>
+                            <td>Customer #${r.customer_id}</td>
+                            <td>${r.reason}</td>
+                            <td><span class="badge badge-active">${r.status}</span></td>
+                        </tr>
+                    `;
+                });
+                document.getElementById("returns-table-body").innerHTML = html || `<tr><td colspan="5">No return requests.</td></tr>`;
+            }
+        }
+
+        async function loadAuditLogs() {
+            if (!adminToken) return;
+            const res = await fetch("/api/audit-logs", {
+                headers: { "Authorization": `Bearer ${adminToken}` }
+            });
+            if (res.ok) {
+                const logs = await res.json();
+                let html = "";
+                logs.forEach(l => {
+                    const timeStr = new Date(l.created_at).toLocaleString();
+                    html += `
+                        <div class="log-item">
+                            <div class="log-time">${timeStr}</div>
+                            <div class="log-action">${l.action}</div>
+                            <div class="log-details">Entity: ${l.entity} (ID: ${l.entity_id || 'N/A'}) by User #${l.user_id || 'System'}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById("audit-log-container").innerHTML = html || `<div style="color:var(--text-muted);">No audit logs.</div>`;
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
